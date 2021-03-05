@@ -1,0 +1,14 @@
+{
+    "go.testFlags": [
+        "-nocolor"
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "yellowduck-sports": true,
+        "node_modules": true,
+    }
+}
