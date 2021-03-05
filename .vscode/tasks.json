@@ -27,5 +27,14 @@
                 "$go"
             ]
         }
+        },
+        {
+            "label": "export-komoot | run-no-incremental",
+            "type": "shell",
+            "command": "make run-no-incremental",
+            "problemMatcher": [
+                "$go"
+            ]
+        }
     ]
 }

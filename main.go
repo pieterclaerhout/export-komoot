@@ -85,6 +85,8 @@ func main() {
 				return
 			}
 
+			deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.gpx", tourToDownload.ID))
+
 			dstPath := filepath.Join(*toPtr, tourToDownload.Filename())
 
 			err = ioutil.WriteFile(dstPath, gpx, 0755)
