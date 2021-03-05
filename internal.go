@@ -3,8 +3,6 @@ package main
 import (
 	"os"
 	"path/filepath"
-
-	"github.com/pieterclaerhout/go-log"
 )
 
 func fileExists(path string) bool {
@@ -17,5 +15,7 @@ func deleteWithPattern(path string, pattern string) {
 	if err != nil {
 		return
 	}
-	log.InfoDump(items, "items")
+	for _, item := range items {
+		os.Remove(item)
+	}
 }
