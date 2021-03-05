@@ -18,12 +18,22 @@ type ToursResponse struct {
 type Tour struct {
 	ID        int64     `json:"id"`
 	Name      string    `json:"name"`
+	Sport     string    `json:"sport"`
 	Status    string    `json:"status"`
 	ChangedAt time.Time `json:"changed_at"`
 }
 
 func (tour Tour) Filename() string {
 	return fmt.Sprintf("%d_%d.gpx", tour.ID, tour.ChangedAt.Unix())
+}
+
+func (tour Tour) IsCycling() bool {
+	switch tour.Sport {
+	case "mtb", "racebike", "touringbicycle", "mtb_easy":
+		return true
+	default:
+		return false
+	}
 }
 
 func (client *Client) Tours(userID int) ([]Tour, []byte, error) {

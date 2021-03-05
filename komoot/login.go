@@ -18,6 +18,10 @@ func (client *Client) Login() (int, error) {
 		Email string `json:"email"`
 	}
 
+	if client.Email == "" || client.Password == "" {
+		return 0, errors.New("No email or password specified")
+	}
+
 	params := url.Values{}
 	params.Set("email", client.Email)
 	params.Set("password", client.Password)
@@ -38,6 +42,10 @@ func (client *Client) Login() (int, error) {
 	var r loginResponse
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		return 0, err
+	}
+
+	if r.Type != "logged_in" {
+		return 0, errors.New("Invalid email or password")
 	}
 
 	req, err = http.NewRequest(http.MethodGet, signInTransferURL, nil)

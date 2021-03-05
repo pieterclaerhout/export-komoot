@@ -8,7 +8,7 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "yellowduck-sports": true,
-        "node_modules": true,
+        "export-komoot": true,
+        "export": true,
     }
 }
