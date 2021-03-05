@@ -15,4 +15,4 @@ test:
 	@$(GO) test -cover `go list ./... | grep -v cmd`
 
 run: build
-	@DEBUG=0 ./$(APP_NAME)
+	@DEBUG=0 ./$(APP_NAME) -email "pieter@yellowduck.be" -password "Ster@1824!" -to "export"
