@@ -6,4 +6,5 @@ require (
 	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2
 	github.com/pieterclaerhout/go-log v1.14.0
 	github.com/pieterclaerhout/go-waitgroup v1.0.7
+	github.com/shabbyrobe/xmlwriter v0.0.0-20200208144257-9fca06d00ffa
 )

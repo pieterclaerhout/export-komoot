@@ -26,7 +26,7 @@ func (client *Client) Login() (int, error) {
 	params.Set("email", client.Email)
 	params.Set("password", client.Password)
 
-	req, err := http.NewRequest(http.MethodPost, signInURL, strings.NewReader(params.Encode()))
+	req, err := http.NewRequest(http.MethodPost, "https://account.komoot.com/v1/signin", strings.NewReader(params.Encode()))
 	if err != nil {
 		return 0, err
 	}
@@ -48,7 +48,7 @@ func (client *Client) Login() (int, error) {
 		return 0, errors.New("Invalid email or password")
 	}
 
-	req, err = http.NewRequest(http.MethodGet, signInTransferURL, nil)
+	req, err = http.NewRequest(http.MethodGet, "https://account.komoot.com/actions/transfer?type=signin", nil)
 	if err != nil {
 		return 0, err
 	}
