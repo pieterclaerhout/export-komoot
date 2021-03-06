@@ -7,9 +7,9 @@ import (
 	"net/http"
 )
 
-func (client *Client) Download(tour Tour) ([]byte, bool, error) {
+func (client *Client) Coordinates(tour Tour) ([]byte, bool, error) {
 
-	downloadURL := fmt.Sprintf("https://www.komoot.nl/api/v007/tours/%d.gpx", tour.ID)
+	downloadURL := fmt.Sprintf("https://www.komoot.nl/api/v007/tours/%d/coordinates", tour.ID)
 
 	req, err := http.NewRequest(http.MethodGet, downloadURL, nil)
 	if err != nil {
@@ -23,12 +23,7 @@ func (client *Client) Download(tour Tour) ([]byte, bool, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusForbidden {
-
-		data, _, err := client.Coordinates(tour)
-		return data, false, err
-
-		// gpx := tour.RecreatedGPX()
-		// return gpx, false, nil
+		return []byte(""), false, nil
 	}
 
 	if resp.StatusCode != http.StatusOK {

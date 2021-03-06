@@ -46,7 +46,7 @@ func main() {
 		changedTours := []komoot.Tour{}
 
 		for _, tour := range tours {
-			dstPath := filepath.Join(*toPtr, tour.Filename())
+			dstPath := filepath.Join(*toPtr, tour.Filename(true))
 			if !fileExists(dstPath) {
 				changedTours = append(changedTours, tour)
 			}
@@ -87,8 +87,9 @@ func main() {
 			}
 
 			deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.gpx", tourToDownload.ID))
+			deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.json", tourToDownload.ID))
 
-			dstPath := filepath.Join(*toPtr, tourToDownload.Filename())
+			dstPath := filepath.Join(*toPtr, tourToDownload.Filename(full))
 
 			err = ioutil.WriteFile(dstPath, gpx, 0755)
 			if err != nil {

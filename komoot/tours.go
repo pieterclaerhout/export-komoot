@@ -38,8 +38,12 @@ type Tour struct {
 	Path      []Path    `json:"path"`
 }
 
-func (tour Tour) Filename() string {
-	return fmt.Sprintf("%d_%d.gpx", tour.ID, tour.ChangedAt.Unix())
+func (tour Tour) Filename(full bool) string {
+	ext := "gpx"
+	if !full {
+		ext = "json"
+	}
+	return fmt.Sprintf("%d_%d.%s", tour.ID, tour.ChangedAt.Unix(), ext)
 }
 
 func (tour Tour) IsCycling() bool {
