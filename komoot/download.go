@@ -7,34 +7,39 @@ import (
 	"net/http"
 )
 
-func (client *Client) Download(tourID int) ([]byte, error) {
+func (client *Client) Download(tour Tour) ([]byte, bool, error) {
 
-	downloadURL := fmt.Sprintf("https://www.komoot.nl/api/v007/tours/%d.gpx", tourID)
+	downloadURL := fmt.Sprintf("https://www.komoot.nl/api/v007/tours/%d.gpx", tour.ID)
 
 	req, err := http.NewRequest(http.MethodGet, downloadURL, nil)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusForbidden {
+		gpx := tour.RecreatedGPX()
+		return gpx, false, nil
+	}
+
 	if resp.StatusCode != http.StatusOK {
-		return nil, errors.New(resp.Status)
+		return nil, false, errors.New(resp.Status)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 
 	if body == nil || len(body) == 0 {
-		return nil, errors.New("empty gpx file")
+		return nil, false, errors.New("empty gpx file")
 	}
 
-	return body, nil
+	return body, true, nil
 
 }
