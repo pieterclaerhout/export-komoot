@@ -26,12 +26,19 @@
             "problemMatcher": [
                 "$go"
             ]
-        }
         },
         {
             "label": "export-komoot | run-no-incremental",
             "type": "shell",
             "command": "make run-no-incremental",
+            "problemMatcher": [
+                "$go"
+            ]
+        },
+        {
+            "label": "export-komoot | run-filter",
+            "type": "shell",
+            "command": "make run-filter",
             "problemMatcher": [
                 "$go"
             ]

@@ -19,3 +19,6 @@ run: build
 
 run-no-incremental: build
 	@DEBUG=0 ./$(APP_NAME) -email "pieter@yellowduck.be" -password "Ster@1824!" -to "export" -no-incremental
+
+run-filter: build
+	@DEBUG=0 ./$(APP_NAME) -email "pieter@yellowduck.be" -password "Ster@1824!" -to "export" -no-incremental -filter "*KK*"

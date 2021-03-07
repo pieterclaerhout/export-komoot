@@ -40,7 +40,14 @@ func main() {
 	log.Info("Komoot User ID:", userID)
 
 	tours, resp, err := client.Tours(userID, *filterPtr)
+	if len(tours) == 0 {
+		log.Info("No tours need to be downloaded")
+		return
+	}
+
 	log.Info("Found", len(tours), "planned tours")
+
+	allTours := []komoot.Tour{}
 
 	if *noIncrementalPtr == false {
 
@@ -49,6 +56,8 @@ func main() {
 		changedTours := []komoot.Tour{}
 
 		for _, tour := range tours {
+
+			allTours = append(allTours, tour)
 
 			if !tour.IsCycling() {
 				continue
@@ -70,6 +79,8 @@ func main() {
 
 		log.Info("Found", len(tours), "which need to be downloaded")
 
+	} else {
+		allTours = tours
 	}
 
 	log.Info("Downloading with a concurrency of", *concurrencyPtr)
@@ -95,16 +106,25 @@ func main() {
 					return err
 				}
 
-				gpxRecreated := r.GPX(tourToDownload.Name)
+				gpxRecreated := r.GPX()
 
 				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.gpx", tourToDownload.ID))
-				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.json", tourToDownload.ID))
+				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.fit", tourToDownload.ID))
 
 				dstPath := filepath.Join(*toPtr, tourToDownload.Filename())
-
 				if err = saveTourFile(gpxRecreated, dstPath, tourToDownload); err != nil {
 					return err
 				}
+
+				// fit, err := r.Fit()
+				// if err != nil {
+				// 	return err
+				// }
+
+				// dstPath = filepath.Join(*toPtr, tourToDownload.Filename()+".fit")
+				// if err := ioutil.WriteFile(dstPath, fit, 0755); err != nil {
+				// 	return err
+				// }
 
 				log.Info("Downloaded:", label)
 
@@ -129,7 +149,7 @@ func main() {
 	log.CheckError(err)
 
 	var out bytes.Buffer
-	err = json.NewEncoder(&out).Encode(tours)
+	err = json.NewEncoder(&out).Encode(allTours)
 	log.CheckError(err)
 
 	log.Info("Saving parsed tour list")

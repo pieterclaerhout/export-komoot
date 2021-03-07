@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/danwakefield/fnmatch"
+	"github.com/pieterclaerhout/go-log"
 )
 
 type ToursResponse struct {
@@ -59,7 +62,7 @@ func (client *Client) Tours(userID int, filter string) ([]Tour, []byte, error) {
 	params.Set("limit", "1000")
 	params.Set("type", "tour_planned")
 	params.Set("status", "private")
-	params.Set("name", filter)
+	// params.Set("name", filter)
 
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www.komoot.nl/api/v007/users/%d/tours/?%s", userID, params.Encode()), nil)
 	if err != nil {
@@ -81,6 +84,21 @@ func (client *Client) Tours(userID int, filter string) ([]Tour, []byte, error) {
 	var r ToursResponse
 	if err := json.Unmarshal(body, &r); err != nil {
 		return nil, nil, err
+	}
+
+	if filter != "" {
+		log.Warn(filter)
+		filteredTours := []Tour{}
+
+		for _, tour := range r.Embedded.Tours {
+			if !fnmatch.Match(filter, tour.Name, 0) {
+				continue
+			}
+			filteredTours = append(filteredTours, tour)
+		}
+
+		r.Embedded.Tours = filteredTours
+
 	}
 
 	return r.Embedded.Tours, body, nil
