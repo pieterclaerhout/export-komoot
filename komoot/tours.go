@@ -19,14 +19,16 @@ type ToursResponse struct {
 }
 
 type Tour struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Sport     string    `json:"sport"`
-	Status    string    `json:"status"`
-	Date      time.Time `json:"date"`
-	Distance  float64   `json:"distance"`
-	Duration  int64     `json:"duration"`
-	ChangedAt time.Time `json:"changed_at"`
+	ID            int64     `json:"id"`
+	Name          string    `json:"name"`
+	Sport         string    `json:"sport"`
+	Status        string    `json:"status"`
+	Date          time.Time `json:"date"`
+	Distance      float64   `json:"distance"`
+	Duration      int64     `json:"duration"`
+	ElevationUp   float64   `json:"elevation_up"`
+	ElevationDown float64   `json:"elevation_down"`
+	ChangedAt     time.Time `json:"changed_at"`
 }
 
 func (tour Tour) Filename(ext string) string {

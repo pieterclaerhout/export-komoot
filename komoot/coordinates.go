@@ -124,6 +124,8 @@ func (r CoordinatesResponse) Fit() ([]byte, error) {
 	lap.EndPositionLat = fit.NewLatitudeDegrees(lastPoint.Lat)
 	lap.EndPositionLong = fit.NewLongitudeDegrees(lastPoint.Lng)
 	lap.TotalTimerTime = uint32(r.Tour.Duration * 1000)
+	lap.TotalAscent = uint16(r.Tour.ElevationUp)
+	lap.TotalDescent = uint16(r.Tour.ElevationDown)
 	course.Laps = append(course.Laps, lap)
 
 	for i, point := range r.Items {
