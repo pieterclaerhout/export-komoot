@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"path/filepath"
 	"time"
 
@@ -63,7 +64,7 @@ func main() {
 				continue
 			}
 
-			dstPath := filepath.Join(*toPtr, tour.Filename())
+			dstPath := filepath.Join(*toPtr, tour.Filename("fit"))
 			if !fileExists(dstPath) {
 				changedTours = append(changedTours, tour)
 			}
@@ -111,20 +112,20 @@ func main() {
 				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.gpx", tourToDownload.ID))
 				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.fit", tourToDownload.ID))
 
-				dstPath := filepath.Join(*toPtr, tourToDownload.Filename())
+				dstPath := filepath.Join(*toPtr, tourToDownload.Filename("gpx"))
 				if err = saveTourFile(gpxRecreated, dstPath, tourToDownload); err != nil {
 					return err
 				}
 
-				// fit, err := r.Fit()
-				// if err != nil {
-				// 	return err
-				// }
+				fit, err := r.Fit()
+				if err != nil {
+					return err
+				}
 
-				// dstPath = filepath.Join(*toPtr, tourToDownload.Filename()+".fit")
-				// if err := ioutil.WriteFile(dstPath, fit, 0755); err != nil {
-				// 	return err
-				// }
+				dstPath = filepath.Join(*toPtr, tourToDownload.Filename("fit"))
+				if err := ioutil.WriteFile(dstPath, fit, 0755); err != nil {
+					return err
+				}
 
 				log.Info("Downloaded:", label)
 

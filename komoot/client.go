@@ -9,20 +9,22 @@ import (
 // See: https://static.komoot.de/doc/auth/oauth2.html
 
 type Client struct {
-	Email      string
-	Password   string
-	IsLoggedIn bool
-	cookieJar  *cookiejar.Jar
-	httpClient *http.Client
+	Email        string
+	Password     string
+	IsLoggedIn   bool
+	komootDomain string
+	cookieJar    *cookiejar.Jar
+	httpClient   *http.Client
 }
 
 func NewClient(email string, password string) *Client {
 	cookieJar, _ := cookiejar.New(nil)
 	return &Client{
-		Email:      email,
-		Password:   password,
-		IsLoggedIn: false,
-		cookieJar:  cookieJar,
+		Email:        email,
+		Password:     password,
+		IsLoggedIn:   false,
+		komootDomain: ".komoot.com",
+		cookieJar:    cookieJar,
 		httpClient: &http.Client{
 			CheckRedirect: nil,
 			Jar:           cookieJar,

@@ -24,11 +24,13 @@ type Tour struct {
 	Sport     string    `json:"sport"`
 	Status    string    `json:"status"`
 	Date      time.Time `json:"date"`
+	Distance  float64   `json:"distance"`
+	Duration  int64     `json:"duration"`
 	ChangedAt time.Time `json:"changed_at"`
 }
 
-func (tour Tour) Filename() string {
-	return fmt.Sprintf("%d_%d.gpx", tour.ID, tour.ChangedAt.Unix())
+func (tour Tour) Filename(ext string) string {
+	return fmt.Sprintf("%d_%d.%s", tour.ID, tour.ChangedAt.Unix(), ext)
 }
 
 func (tour Tour) IsCycling() bool {
@@ -56,15 +58,12 @@ func (tour Tour) FormattedSport() string {
 
 func (client *Client) Tours(userID int, filter string) ([]Tour, []byte, error) {
 
-	// https://www.komoot.nl/api/v007/users/471950076586/tours/?limit=24&sport_types=racebike%2Ce_racebike&type=tour_planned&sort_field=date&sort_direction=desc&name=&status=private&hl=nl
-
 	params := url.Values{}
 	params.Set("limit", "1000")
 	params.Set("type", "tour_planned")
 	params.Set("status", "private")
-	// params.Set("name", filter)
 
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www.komoot.nl/api/v007/users/%d/tours/?%s", userID, params.Encode()), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www%s/api/v007/users/%d/tours/?%s", client.komootDomain, userID, params.Encode()), nil)
 	if err != nil {
 		return nil, nil, err
 	}

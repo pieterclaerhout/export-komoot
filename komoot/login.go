@@ -64,7 +64,13 @@ func (client *Client) Login() (int, error) {
 		return 0, err
 	}
 
-	// Check which country / URL we need for Komoot
+	for _, cookie := range resp.Cookies() {
+		if strings.HasPrefix(cookie.Domain, ".komoot") {
+			client.komootDomain = cookie.Domain
+			break
+		}
+	}
+
 	bodyStr := string(body)
 
 	prefix := "https://feed-api.komoot.de/v1/"
