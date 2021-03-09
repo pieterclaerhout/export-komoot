@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"path/filepath"
 	"time"
 
@@ -22,6 +21,7 @@ func main() {
 	emailPtr := flag.String("email", "", "Your Komoot email address")
 	passwordPtr := flag.String("password", "", "Your Komoot password")
 	filterPtr := flag.String("filter", "", "Filter on the given name")
+	formatPtr := flag.String("format", "gpx", "The format to export as: gpx or fit")
 	toPtr := flag.String("to", "", "The path to export to")
 	noIncrementalPtr := flag.Bool("no-incremental", false, "If specified, all data is redownloaded")
 	concurrencyPtr := flag.Int("concurrency", 16, "The number of simultaneous downloads")
@@ -30,13 +30,20 @@ func main() {
 	start := time.Now()
 	defer func() { log.Info("Elapsed:", time.Since(start)) }()
 
+	format := "gpx"
+	if *formatPtr == "fit" {
+		format = "fit"
+	}
+
 	client := komoot.NewClient(*emailPtr, *passwordPtr)
 
 	userID, err := client.Login()
 	log.CheckError(err)
 
 	fullDstPath, _ := filepath.Abs(*toPtr)
-	log.Info("Exporting:", *emailPtr, "to:", fullDstPath)
+	log.Info("Exporting:", *emailPtr)
+	log.Info("       to:", fullDstPath)
+	log.Info("   format:", format)
 
 	log.Info("Komoot User ID:", userID)
 
@@ -60,11 +67,7 @@ func main() {
 
 			allTours = append(allTours, tour)
 
-			if !tour.IsCycling() {
-				continue
-			}
-
-			dstPath := filepath.Join(*toPtr, tour.Filename("fit"))
+			dstPath := filepath.Join(*toPtr, tour.Filename(format))
 			if !fileExists(dstPath) {
 				changedTours = append(changedTours, tour)
 			}
@@ -94,10 +97,6 @@ func main() {
 		tourToDownload := tour
 		label := fmt.Sprintf("%10d | %-7s | %-15s | %s", tour.ID, tour.Status, tour.FormattedSport(), tour.Name)
 
-		if !tour.IsCycling() {
-			continue
-		}
-
 		wg.Add(func() {
 
 			if err := func() error {
@@ -107,23 +106,20 @@ func main() {
 					return err
 				}
 
-				gpxRecreated := r.GPX()
-
-				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.gpx", tourToDownload.ID))
-				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.fit", tourToDownload.ID))
-
-				dstPath := filepath.Join(*toPtr, tourToDownload.Filename("gpx"))
-				if err = saveTourFile(gpxRecreated, dstPath, tourToDownload); err != nil {
-					return err
+				var out []byte
+				if format == "fit" {
+					out, err = r.Fit()
+					if err != nil {
+						return err
+					}
+				} else {
+					out = r.GPX()
 				}
 
-				fit, err := r.Fit()
-				if err != nil {
-					return err
-				}
+				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.*", tourToDownload.ID))
 
-				dstPath = filepath.Join(*toPtr, tourToDownload.Filename("fit"))
-				if err := ioutil.WriteFile(dstPath, fit, 0755); err != nil {
+				dstPath := filepath.Join(*toPtr, tourToDownload.Filename(format))
+				if err = saveTourFile(out, dstPath, tourToDownload); err != nil {
 					return err
 				}
 
@@ -142,7 +138,7 @@ func main() {
 
 	wg.Wait()
 
-	log.Info("Downloaded", downloadCount, "cycling tours")
+	log.Info("Downloaded", downloadCount, "tours")
 
 	log.Info("Saving tour list")
 	dstPath := filepath.Join(*toPtr, "tours.json")

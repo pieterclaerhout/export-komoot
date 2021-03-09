@@ -42,6 +42,8 @@ github.com/mattn/go-isatty v0.0.11 h1:FxPOTFNqGkuDUGi3H/qkUbQO4ZiBa2brKq5r0l8TGe
 github.com/mattn/go-isatty v0.0.11/go.mod h1:PhnuNfih5lzO57/f3n+odYbM4JtupLOxQOAqxQCu2WE=
 github.com/mdempsky/unconvert v0.0.0-20190325185700-2f5dc3378ed3 h1:ONMmGu9qiY0FW95o5V7LBwZaMg58Sb9pUYtTD4/rgks=
 github.com/mdempsky/unconvert v0.0.0-20190325185700-2f5dc3378ed3/go.mod h1:9+3Wp2ccIz73BJqVfc7n2+1A+mzvnEwtDTqEjeRngBQ=
+github.com/pieterclaerhout/fit v0.9.1-0.20210308150656-94b438abc3fc h1:c4lzO3t7lAoSRyM5/G/rIKs/Bu0n+jsTcmvg+7HIZtw=
+github.com/pieterclaerhout/fit v0.9.1-0.20210308150656-94b438abc3fc/go.mod h1:0/EGDJDK7m3uXhNH+vnV9IDlmnvBCVJkISRGWob11bY=
 github.com/pieterclaerhout/go-formatter v1.0.4 h1:XKFCBb9aNwazTqhtH1snru/D8E7yXQi5pFYpRRfzHJI=
 github.com/pieterclaerhout/go-formatter v1.0.4/go.mod h1:1okQQFUwXCLGTWXoWoh3OGchp3i7KeebwIx/ufmsjks=
 github.com/pieterclaerhout/go-log v1.14.0 h1:TWh+YvSWdqYeejB15pxa6S8p06kDDLCUz1nfNyqOJPo=

@@ -95,10 +95,6 @@ func (r CoordinatesResponse) Fit() ([]byte, error) {
 
 	f.FileId.TimeCreated = time.Now()
 	f.FileId.SerialNumber = uint32(time.Now().Unix())
-	// f.FileId.Manufacturer = fit.ManufacturerGarmin
-	// f.FileId.Product = uint16(fit.GarminProductConnect)
-	// f.FileId.ProductName = "export-komoot"
-	// f.FileId.Number = 1
 
 	course, err := f.Course()
 	if err != nil {
@@ -106,9 +102,7 @@ func (r CoordinatesResponse) Fit() ([]byte, error) {
 	}
 
 	course.Course = fit.NewCourseMsg()
-	// course.Course.Capabilities = fit.CourseCapabilities(771)
-	// course.Course.Sport = fit.SportCycling
-	course.Course.Name = fmt.Sprintf("___%d %s", r.Tour.ID, r.Tour.Name)
+	course.Course.Name = fmt.Sprintf("%d %s", r.Tour.ID, r.Tour.Name)
 
 	course.Events = []*fit.EventMsg{}
 
@@ -116,7 +110,7 @@ func (r CoordinatesResponse) Fit() ([]byte, error) {
 	lastPoint := r.Items[len(r.Items)-1]
 
 	lap := fit.NewLapMsg()
-	lap.TotalDistance = uint32(r.Tour.Distance * 100) // To calculate
+	lap.TotalDistance = uint32(r.Tour.Distance * 100)
 	lap.StartTime = f.FileId.TimeCreated
 	lap.Timestamp = f.FileId.TimeCreated
 	lap.StartPositionLat = fit.NewLatitudeDegrees(firstPoint.Lat)

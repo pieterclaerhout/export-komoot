@@ -1,3 +1,6 @@
+include .env
+export
+
 APP_NAME := export-komoot
 GO := go
 
@@ -15,10 +18,10 @@ test:
 	@$(GO) test -cover `go list ./... | grep -v cmd`
 
 run: build
-	@DEBUG=0 ./$(APP_NAME) -email "pieter@yellowduck.be" -password "Ster@1824!" -to "export"
+	@DEBUG=0 ./$(APP_NAME) -email "$(KOMOOT_EMAIL)" -password "$(KOMOOT_PASSWD)" -to "export"
 
 run-no-incremental: build
-	@DEBUG=0 ./$(APP_NAME) -email "pieter@yellowduck.be" -password "Ster@1824!" -to "export" -no-incremental
+	@DEBUG=0 ./$(APP_NAME) -email "$(KOMOOT_EMAIL)" -password "$(KOMOOT_PASSWD)" -to "export" -no-incremental
 
 run-filter: build
-	@DEBUG=0 ./$(APP_NAME) -email "pieter@yellowduck.be" -password "Ster@1824!" -to "export" -no-incremental -filter "*KK*"
+	@DEBUG=0 ./$(APP_NAME) -email "$(KOMOOT_EMAIL)" -password "$(KOMOOT_PASSWD)" -to "export" -no-incremental -filter "*KK*"

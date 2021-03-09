@@ -2,7 +2,7 @@ module github.com/pieterclaerhout/export-komoot
 
 go 1.16
 
-replace github.com/tormoder/fit => ../fit
+replace github.com/tormoder/fit => github.com/pieterclaerhout/fit v0.9.1-0.20210308150656-94b438abc3fc
 
 require (
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964

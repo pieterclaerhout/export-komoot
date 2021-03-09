@@ -35,14 +35,6 @@ func (tour Tour) Filename(ext string) string {
 	return fmt.Sprintf("%d_%d.%s", tour.ID, tour.ChangedAt.Unix(), ext)
 }
 
-func (tour Tour) IsCycling() bool {
-	switch tour.Sport {
-	case "mtb", "racebike", "touringbicycle", "mtb_easy":
-		return true
-	default:
-		return false
-	}
-}
 func (tour Tour) FormattedSport() string {
 	switch tour.Sport {
 	case "mtb":
