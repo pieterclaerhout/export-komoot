@@ -17,11 +17,14 @@ build: init
 test:
 	@$(GO) test -cover `go list ./... | grep -v cmd`
 
-run: build
-	@DEBUG=0 ./$(APP_NAME) -email "$(KOMOOT_EMAIL)" -password "$(KOMOOT_PASSWD)" -to "export"
+run-incremental: build
+	@DEBUG=0 ./$(APP_NAME) --email "$(KOMOOT_EMAIL)" --password "$(KOMOOT_PASSWD)" --to "export"
 
-run-no-incremental: build
-	@DEBUG=0 ./$(APP_NAME) -email "$(KOMOOT_EMAIL)" -password "$(KOMOOT_PASSWD)" -to "export" -no-incremental
+run-full: build
+	@DEBUG=0 ./$(APP_NAME) --email "$(KOMOOT_EMAIL)" --password "$(KOMOOT_PASSWD)" --to "export" --fulldownload
 
 run-filter: build
-	@DEBUG=0 ./$(APP_NAME) -email "$(KOMOOT_EMAIL)" -password "$(KOMOOT_PASSWD)" -to "export" -no-incremental -filter "*KK*"
+	@DEBUG=0 ./$(APP_NAME) --email "$(KOMOOT_EMAIL)" --password "$(KOMOOT_PASSWD)" --to "export" --fulldownload --filter "*KK*"
+
+help: build
+	@DEBUG=0 ./$(APP_NAME) --help

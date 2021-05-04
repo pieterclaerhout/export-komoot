@@ -20,17 +20,25 @@
             ]
         },
         {
-            "label": "export-komoot | run",
+            "label": "export-komoot | run-incremental",
             "type": "shell",
-            "command": "make run",
+            "command": "make run-incremental",
             "problemMatcher": [
                 "$go"
             ]
         },
         {
-            "label": "export-komoot | run-no-incremental",
+            "label": "export-komoot | run-full",
             "type": "shell",
-            "command": "make run-no-incremental",
+            "command": "make run-full",
+            "problemMatcher": [
+                "$go"
+            ]
+        },
+        {
+            "label": "export-komoot | help",
+            "type": "shell",
+            "command": "make help",
             "problemMatcher": [
                 "$go"
             ]

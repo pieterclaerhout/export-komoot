@@ -3,51 +3,57 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"path/filepath"
 	"time"
 
+	"github.com/alexflint/go-arg"
 	"github.com/pieterclaerhout/export-komoot/komoot"
 	"github.com/pieterclaerhout/go-log"
 	"github.com/pieterclaerhout/go-waitgroup"
 )
 
+type args struct {
+	Email        string `help:"Your Komoot email address"`
+	Password     string `help:"Your Komoot password"`
+	Filter       string `help:"Filter tours with name matching this pattern"`
+	Format       string `help:"The format to export as: gpx or fit" default:"gpx"`
+	To           string `help:"The path to export to"`
+	FullDownload bool   `help:"If specified, all data is redownloaded" default:"false"`
+	Concurrency  int    `help:"The number of simultaneous downloads" default:"16"`
+}
+
 func main() {
+
+	var args args
+	arg.MustParse(&args)
 
 	log.PrintTimestamp = true
 	log.PrintColors = true
-
-	emailPtr := flag.String("email", "", "Your Komoot email address")
-	passwordPtr := flag.String("password", "", "Your Komoot password")
-	filterPtr := flag.String("filter", "", "Filter on the given name")
-	formatPtr := flag.String("format", "gpx", "The format to export as: gpx or fit")
-	toPtr := flag.String("to", "", "The path to export to")
-	noIncrementalPtr := flag.Bool("no-incremental", false, "If specified, all data is redownloaded")
-	concurrencyPtr := flag.Int("concurrency", 16, "The number of simultaneous downloads")
-	flag.Parse()
 
 	start := time.Now()
 	defer func() { log.Info("Elapsed:", time.Since(start)) }()
 
 	format := "gpx"
-	if *formatPtr == "fit" {
+	if args.Format == "fit" {
 		format = "fit"
 	}
 
-	client := komoot.NewClient(*emailPtr, *passwordPtr)
+	client := komoot.NewClient(args.Email, args.Password)
 
 	userID, err := client.Login()
 	log.CheckError(err)
 
-	fullDstPath, _ := filepath.Abs(*toPtr)
-	log.Info("Exporting:", *emailPtr)
+	fullDstPath, _ := filepath.Abs(args.To)
+	log.Info("Exporting:", args.Email)
 	log.Info("       to:", fullDstPath)
 	log.Info("   format:", format)
 
 	log.Info("Komoot User ID:", userID)
 
-	tours, resp, err := client.Tours(userID, *filterPtr)
+	tours, resp, err := client.Tours(userID, args.Filter)
+	log.CheckError(err)
+
 	if len(tours) == 0 {
 		log.Info("No tours need to be downloaded")
 		return
@@ -57,7 +63,7 @@ func main() {
 
 	allTours := []komoot.Tour{}
 
-	if *noIncrementalPtr == false {
+	if args.FullDownload == false {
 
 		log.Info("Incremental download, checking what has changed")
 
@@ -67,7 +73,7 @@ func main() {
 
 			allTours = append(allTours, tour)
 
-			dstPath := filepath.Join(*toPtr, tour.Filename(format))
+			dstPath := filepath.Join(args.To, tour.Filename(format))
 			if !fileExists(dstPath) {
 				changedTours = append(changedTours, tour)
 			}
@@ -87,8 +93,8 @@ func main() {
 		allTours = tours
 	}
 
-	log.Info("Downloading with a concurrency of", *concurrencyPtr)
-	wg := waitgroup.NewWaitGroup(*concurrencyPtr)
+	log.Info("Downloading with a concurrency of", args.Concurrency)
+	wg := waitgroup.NewWaitGroup(args.Concurrency)
 
 	var downloadCount int
 
@@ -116,9 +122,9 @@ func main() {
 					out = r.GPX()
 				}
 
-				deleteWithPattern(*toPtr, fmt.Sprintf("%d_*.*", tourToDownload.ID))
+				deleteWithPattern(args.To, fmt.Sprintf("%d_*.*", tourToDownload.ID))
 
-				dstPath := filepath.Join(*toPtr, tourToDownload.Filename(format))
+				dstPath := filepath.Join(args.To, tourToDownload.Filename(format))
 				if err = saveTourFile(out, dstPath, tourToDownload); err != nil {
 					return err
 				}
@@ -141,7 +147,7 @@ func main() {
 	log.Info("Downloaded", downloadCount, "tours")
 
 	log.Info("Saving tour list")
-	dstPath := filepath.Join(*toPtr, "tours.json")
+	dstPath := filepath.Join(args.To, "tours.json")
 	err = saveFormattedJSON(resp, dstPath)
 	log.CheckError(err)
 
@@ -150,7 +156,7 @@ func main() {
 	log.CheckError(err)
 
 	log.Info("Saving parsed tour list")
-	dstPath = filepath.Join(*toPtr, "tours_parsed.json")
+	dstPath = filepath.Join(args.To, "tours_parsed.json")
 	err = saveFormattedJSON(out.Bytes(), dstPath)
 	log.CheckError(err)
 
