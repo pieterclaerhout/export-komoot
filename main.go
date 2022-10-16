@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"path/filepath"
 	"time"
 
@@ -48,6 +49,9 @@ func main() {
 	log.Info("Exporting:", args.Email)
 	log.Info("       to:", fullDstPath)
 	log.Info("   format:", format)
+
+	err = os.MkdirAll(args.To, 0777)
+	log.CheckError(err)
 
 	log.Info("Komoot User ID:", userID)
 
