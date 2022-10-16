@@ -1,3 +1,4 @@
 .env
 export-komoot
 export
+.DS_Store
