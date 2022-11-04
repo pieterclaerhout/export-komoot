@@ -3,7 +3,7 @@ package komoot
 import (
 	"encoding/json"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -14,12 +14,12 @@ func (client *Client) Login() (int, error) {
 
 	type loginResponse struct {
 		Type  string `json:"type"`
-		Error error  `json:"error"`
+		Error string `json:"error"`
 		Email string `json:"email"`
 	}
 
 	if client.Email == "" || client.Password == "" {
-		return 0, errors.New("No email or password specified")
+		return 0, errors.New("no email or password specified")
 	}
 
 	params := url.Values{}
@@ -45,7 +45,7 @@ func (client *Client) Login() (int, error) {
 	}
 
 	if r.Type != "logged_in" {
-		return 0, errors.New("Invalid email or password")
+		return 0, errors.New("login failed: " + r.Error)
 	}
 
 	req, err = http.NewRequest(http.MethodGet, "https://account.komoot.com/actions/transfer?type=signin", nil)
@@ -59,7 +59,7 @@ func (client *Client) Login() (int, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return 0, err
 	}
@@ -78,13 +78,13 @@ func (client *Client) Login() (int, error) {
 
 	start := strings.Index(bodyStr, prefix)
 	if start == -1 {
-		return 0, errors.New("User ID not found")
+		return 0, errors.New("user ID not found")
 	}
 	bodyStr = bodyStr[start+len(prefix):]
 
 	end := strings.Index(bodyStr, suffix)
 	if end == -1 {
-		return 0, errors.New("User ID not found")
+		return 0, errors.New("user ID not found")
 	}
 	bodyStr = bodyStr[:end]
 

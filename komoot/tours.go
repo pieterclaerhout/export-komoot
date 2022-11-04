@@ -3,7 +3,7 @@ package komoot
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -31,11 +31,11 @@ type Tour struct {
 	ChangedAt     time.Time `json:"changed_at"`
 }
 
-func (tour Tour) Filename(ext string) string {
+func (tour *Tour) Filename(ext string) string {
 	return fmt.Sprintf("%d_%d.%s", tour.ID, tour.ChangedAt.Unix(), ext)
 }
 
-func (tour Tour) FormattedSport() string {
+func (tour *Tour) FormattedSport() string {
 	switch tour.Sport {
 	case "mtb":
 		return "mountainbike"
@@ -69,7 +69,7 @@ func (client *Client) Tours(userID int, filter string) ([]Tour, []byte, error) {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, nil, err
 	}
