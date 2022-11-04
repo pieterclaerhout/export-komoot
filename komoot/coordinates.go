@@ -26,8 +26,8 @@ type Coordinate struct {
 	T   int64   `json:"t"`
 }
 
-func (c Coordinate) Time() string {
-	t := time.Unix(c.T/1000.0, 0)
+func (c Coordinate) Time(startTime time.Time) string {
+	t := time.Unix(c.T+startTime.UnixMilli()/1000.0, 0)
 	return t.UTC().Format("2006-01-02T15:04:05Z")
 }
 
@@ -70,7 +70,7 @@ func (r CoordinatesResponse) GPX() []byte {
 		w.WriteText(fmt.Sprintf("%f", point.Alt))
 		w.EndElem("ele")
 		w.StartElem(xmlwriter.Elem{Name: "time"})
-		w.WriteText(point.Time())
+		w.WriteText(point.Time(r.Tour.Date))
 		w.EndElem("time")
 		w.EndElem("trkpt")
 	}
