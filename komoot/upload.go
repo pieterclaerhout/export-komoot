@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/pieterclaerhout/go-log"
 )
 
 func (client *Client) Upload(name string, gpxData string, sport string) error {
@@ -50,6 +52,8 @@ func (client *Client) importGpx(gpxData string) (*UploadedTour, error) {
 		return nil, err
 	}
 
+	log.Debug(string(body))
+
 	var r UploadTourResponse
 	if err := json.Unmarshal(body, &r); err != nil {
 		return nil, err
@@ -89,6 +93,8 @@ func (client *Client) importTour(tour *UploadedTour, sport string) (*MatchedTour
 	if err != nil {
 		return nil, err
 	}
+
+	log.Debug(string(body))
 
 	var r UploadTourResponse
 	if err := json.Unmarshal(body, &r); err != nil {
@@ -152,6 +158,13 @@ func (client *Client) createTour(tour *MatchedTour) error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	log.Debug(string(body))
 
 	return nil
 }
