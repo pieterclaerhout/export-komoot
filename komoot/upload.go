@@ -9,8 +9,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-
-	"github.com/pieterclaerhout/go-log"
 )
 
 type ImportedToursResponse struct {
@@ -133,8 +131,6 @@ type ImportedCoordinate struct {
 }
 
 func (client *Client) Upload(name string, gpxData string, sport string) error {
-	log.Warn("Importing GPX")
-
 	params := url.Values{}
 	params.Set("data_type", "gpx")
 
