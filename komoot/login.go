@@ -8,6 +8,9 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/pieterclaerhout/go-log"
 )
 
 func (client *Client) Login() (int, error) {
@@ -42,6 +45,13 @@ func (client *Client) Login() (int, error) {
 	var r loginResponse
 	if err := json.NewDecoder(resp.Body).Decode(&r); err != nil {
 		return 0, err
+	}
+
+	if r.Error == "rate_limit" {
+		retryAfter, _ := strconv.Atoi(resp.Header.Get("Retry-After"))
+		log.Warn("Rate limit, retrying after", retryAfter, "seconds")
+		time.Sleep(time.Duration(retryAfter) * time.Second)
+		return client.Login()
 	}
 
 	if r.Type != "logged_in" {
