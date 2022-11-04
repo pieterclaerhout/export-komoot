@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/alexflint/go-arg"
@@ -67,7 +68,7 @@ func main() {
 
 	allTours := []komoot.Tour{}
 
-	if args.FullDownload == false {
+	if !args.FullDownload {
 
 		log.Info("Incremental download, checking what has changed")
 
@@ -88,67 +89,84 @@ func main() {
 
 		if len(tours) == 0 {
 			log.Info("No tours need to be downloaded")
-			return
+		} else {
+			log.Info("Found", len(tours), "which need to be downloaded")
 		}
-
-		log.Info("Found", len(tours), "which need to be downloaded")
 
 	} else {
 		allTours = tours
 	}
 
-	log.Info("Downloading with a concurrency of", args.Concurrency)
-	wg := waitgroup.NewWaitGroup(args.Concurrency)
+	if len(tours) > 0 {
+		log.Info("Downloading with a concurrency of", args.Concurrency)
+		wg := waitgroup.NewWaitGroup(args.Concurrency)
 
-	var downloadCount int
+		var downloadCount int
 
-	for _, tour := range tours {
+		for _, tour := range tours {
 
-		tourToDownload := tour
-		label := fmt.Sprintf("%10d | %-7s | %-15s | %s", tour.ID, tour.Status, tour.FormattedSport(), tour.Name)
+			tourToDownload := tour
+			label := fmt.Sprintf("%10d | %-7s | %-15s | %s", tour.ID, tour.Status, tour.FormattedSport(), tour.Name)
 
-		wg.Add(func() {
+			wg.Add(func() {
 
-			if err := func() error {
+				if err := func() error {
 
-				r, err := client.Coordinates(tourToDownload)
-				if err != nil {
-					return err
-				}
-
-				var out []byte
-				if format == "fit" {
-					out, err = r.Fit()
+					r, err := client.Coordinates(tourToDownload)
 					if err != nil {
 						return err
 					}
-				} else {
-					out = r.GPX()
+
+					var out []byte
+					if format == "fit" {
+						out, err = r.Fit()
+						if err != nil {
+							return err
+						}
+					} else {
+						out = r.GPX()
+					}
+
+					deleteWithPattern(args.To, fmt.Sprintf("%d_*.*", tourToDownload.ID))
+
+					dstPath := filepath.Join(args.To, tourToDownload.Filename(format))
+					if err = saveTourFile(out, dstPath, tourToDownload); err != nil {
+						return err
+					}
+
+					log.Info("Downloaded:", label)
+
+					return nil
+
+				}(); err != nil {
+					log.Error("Downloaded:", label, "|", err)
 				}
+				downloadCount++
 
-				deleteWithPattern(args.To, fmt.Sprintf("%d_*.*", tourToDownload.ID))
+			})
 
-				dstPath := filepath.Join(args.To, tourToDownload.Filename(format))
-				if err = saveTourFile(out, dstPath, tourToDownload); err != nil {
-					return err
-				}
+		}
 
-				log.Info("Downloaded:", label)
+		wg.Wait()
 
-				return nil
-
-			}(); err != nil {
-				log.Error("Downloaded:", label, "|", err)
-			}
-			downloadCount++
-
-		})
-
+		log.Info("Downloaded", downloadCount, "tours")
 	}
 
-	wg.Wait()
+	allTourIds := map[string]bool{}
+	for _, tour := range allTours {
+		allTourIds[fmt.Sprint(tour.ID)] = true
+	}
 
-	log.Info("Downloaded", downloadCount, "tours")
+	items, err := filepath.Glob(filepath.Join(args.To, "*."+format))
+	log.CheckError(err)
+	for _, item := range items {
+		id := strings.Split(filepath.Base(item), "_")
+		if _, exists := allTourIds[id[0]]; exists {
+			continue
+		}
+		log.Info("Deleting:", filepath.Base(item))
+		deleteWithPattern(args.To, id[0]+"*."+format)
+	}
 
 	log.Info("Saving tour list")
 	dstPath := filepath.Join(args.To, "tours.json")
