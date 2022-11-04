@@ -23,7 +23,7 @@ type Coordinate struct {
 	Lat float64 `json:"lat"`
 	Lng float64 `json:"lng"`
 	Alt float64 `json:"alt"`
-	T   int64   `json:"t,omitempty"`
+	T   int64   `json:"t"`
 }
 
 func (c Coordinate) Time(startTime time.Time) string {
