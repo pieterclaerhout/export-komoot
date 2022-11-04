@@ -52,6 +52,7 @@ func (client *Client) importGpx(gpxData string) (*UploadedTour, error) {
 		return nil, err
 	}
 
+	log.DebugSeparator("import gpx")
 	log.Debug(string(body))
 
 	var r UploadTourResponse
@@ -94,6 +95,7 @@ func (client *Client) importTour(tour *UploadedTour, sport string) (*MatchedTour
 		return nil, err
 	}
 
+	log.DebugSeparator("import tour")
 	log.Debug(string(body))
 
 	var r UploadTourResponse
@@ -164,6 +166,7 @@ func (client *Client) createTour(tour *MatchedTour) error {
 		return err
 	}
 
+	log.DebugSeparator("create tour")
 	log.Debug(string(body))
 
 	return nil
