@@ -8,127 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 )
-
-type ImportedToursResponse struct {
-	Links struct {
-		Self struct {
-			Href string `json:"href"`
-		} `json:"self"`
-	} `json:"_links"`
-	Embedded struct {
-		Items   []ImportedTour `json:"items"`
-		Matched struct {
-			Constitution int64  `json:"constitution"`
-			Status       string `json:"status"`
-			Date         string `json:"date"`
-			Difficulty   struct {
-				ExplanationFitness   string `json:"explanation_fitness"`
-				ExplanationTechnical string `json:"explanation_technical"`
-				Grade                string `json:"grade"`
-			} `json:"difficulty"`
-			Distance      float64 `json:"distance"`
-			Duration      float64 `json:"duration"`
-			ElevationDown float64 `json:"elevation_down"`
-			ElevationUp   float64 `json:"elevation_up"`
-			Name          string  `json:"name"`
-			Path          []struct {
-				Index     int64  `json:"index"`
-				Reference string `json:"reference,omitempty"`
-				Location  struct {
-					Lat float64 `json:"lat"`
-					Lng float64 `json:"lng"`
-					Alt float64 `json:"alt"`
-				} `json:"location"`
-			} `json:"path"`
-			Query    string `json:"query"`
-			Segments []struct {
-				From int64  `json:"from"`
-				To   int64  `json:"to"`
-				Type string `json:"type"`
-			} `json:"segments"`
-			Source  string `json:"source"`
-			Sport   string `json:"sport"`
-			Summary struct {
-				Surfaces []struct {
-					Amount float64 `json:"amount"`
-					Type   string  `json:"type"`
-				} `json:"surfaces"`
-				WayTypes []struct {
-					Amount float64 `json:"amount"`
-					Type   string  `json:"type"`
-				} `json:"way_types"`
-			} `json:"summary"`
-			TourInformation []struct {
-				Type     string `json:"type"`
-				Segments []struct {
-					From int64 `json:"from"`
-					To   int64 `json:"to"`
-				} `json:"segments"`
-			} `json:"tour_information"`
-			Type     string `json:"type"`
-			Embedded struct {
-				Coordinates struct {
-					Items []struct {
-						Lat float64 `json:"lat"`
-						Lng float64 `json:"lng"`
-						Alt float64 `json:"alt"`
-						T   float64 `json:"t"`
-					} `json:"items"`
-				} `json:"coordinates"`
-				Directions struct {
-					Items []struct {
-						CardinalDirection string `json:"cardinal_direction"`
-						ChangeWay         bool   `json:"change_way"`
-						Complex           bool   `json:"complex"`
-						Distance          int64  `json:"distance"`
-						Index             int64  `json:"index"`
-						LastSimilar       int64  `json:"last_similar"`
-						StreetName        string `json:"street_name"`
-						Type              string `json:"type"`
-						WayType           string `json:"way_type"`
-					} `json:"items"`
-				} `json:"directions"`
-				Surfaces struct {
-					Items []struct {
-						From    int64  `json:"from"`
-						To      int64  `json:"to"`
-						Element string `json:"element"`
-					} `json:"items"`
-				} `json:"surfaces"`
-				WayTypes struct {
-					Items []struct {
-						From    int64  `json:"from"`
-						To      int64  `json:"to"`
-						Element string `json:"element"`
-					} `json:"items"`
-				} `json:"way_types"`
-			} `json:"_embedded"`
-		} `json:"matched"`
-	} `json:"_embedded"`
-	Message string `json:"message"`
-}
-
-type ImportedTour struct {
-	Type         string    `json:"type"`
-	Source       string    `json:"source"`
-	Sport        string    `json:"sport"`
-	Constitution int64     `json:"constitution"`
-	Name         string    `json:"name"`
-	Date         time.Time `json:"date"`
-	Embedded     struct {
-		Coordinates struct {
-			Items []ImportedCoordinate `json:"items"`
-		} `json:"coordinates"`
-	} `json:"_embedded"`
-}
-
-type ImportedCoordinate struct {
-	Lat float64 `json:"lat"`
-	Lng float64 `json:"lng"`
-	Alt float64 `json:"alt"`
-}
 
 func (client *Client) Upload(name string, gpxData string, sport string) error {
 	params := url.Values{}
@@ -154,7 +34,7 @@ func (client *Client) Upload(name string, gpxData string, sport string) error {
 		return err
 	}
 
-	var r ImportedToursResponse
+	var r UploadTourResponse
 	if err := json.Unmarshal(body, &r); err != nil {
 		return err
 	}
@@ -190,7 +70,7 @@ func (client *Client) Upload(name string, gpxData string, sport string) error {
 		return err
 	}
 
-	var r2 ImportedToursResponse
+	var r2 UploadTourResponse
 	if err := json.Unmarshal(body, &r2); err != nil {
 		return err
 	}
@@ -209,11 +89,7 @@ func (client *Client) Upload(name string, gpxData string, sport string) error {
 
 	tour2.Path = append(tour2.Path, firstPoint)
 
-	tour2.Segments = append(tour2.Segments, struct {
-		From int64  "json:\"from\""
-		To   int64  "json:\"to\""
-		Type string "json:\"type\""
-	}{
+	tour2.Segments = append(tour2.Segments, Segment{
 		From: lastPoint.Index,
 		To:   lastPoint.Index + 1,
 		Type: "Routed",
@@ -221,12 +97,7 @@ func (client *Client) Upload(name string, gpxData string, sport string) error {
 
 	lastCoordinate := tour2.Embedded.Coordinates.Items[len(tour2.Embedded.Coordinates.Items)-1]
 
-	tour2.Embedded.Coordinates.Items = append(tour2.Embedded.Coordinates.Items, struct {
-		Lat float64 "json:\"lat\""
-		Lng float64 "json:\"lng\""
-		Alt float64 "json:\"alt\""
-		T   float64 "json:\"t\""
-	}{
+	tour2.Embedded.Coordinates.Items = append(tour2.Embedded.Coordinates.Items, Coordinate{
 		Lat: firstPoint.Location.Lat,
 		Lng: firstPoint.Location.Lng,
 		Alt: firstPoint.Location.Alt,
@@ -254,11 +125,6 @@ func (client *Client) Upload(name string, gpxData string, sport string) error {
 		return err
 	}
 	defer resp.Body.Close()
-
-	// body, err = io.ReadAll(resp.Body)
-	// if err != nil {
-	// 	return err
-	// }
 
 	return nil
 }

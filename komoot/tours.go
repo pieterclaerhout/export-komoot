@@ -6,49 +6,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/danwakefield/fnmatch"
 	"github.com/pieterclaerhout/go-log"
 )
-
-type ToursResponse struct {
-	Embedded struct {
-		Tours []Tour `json:"tours"`
-	} `json:"_embedded"`
-}
-
-type Tour struct {
-	ID            int64     `json:"id"`
-	Name          string    `json:"name"`
-	Sport         string    `json:"sport"`
-	Status        string    `json:"status"`
-	Date          time.Time `json:"date"`
-	Distance      float64   `json:"distance"`
-	Duration      int64     `json:"duration"`
-	ElevationUp   float64   `json:"elevation_up"`
-	ElevationDown float64   `json:"elevation_down"`
-	ChangedAt     time.Time `json:"changed_at"`
-}
-
-func (tour *Tour) Filename(ext string) string {
-	return fmt.Sprintf("%d_%d.%s", tour.ID, tour.ChangedAt.Unix(), ext)
-}
-
-func (tour *Tour) FormattedSport() string {
-	switch tour.Sport {
-	case "mtb":
-		return "mountainbike"
-	case "racebike":
-		return "racebike"
-	case "touringbicycle":
-		return "touring"
-	case "mtb_easy":
-		return "gravel"
-	default:
-		return tour.Sport
-	}
-}
 
 func (client *Client) Tours(userID int, filter string) ([]Tour, []byte, error) {
 
