@@ -103,7 +103,14 @@ type Tour struct {
 }
 
 func (tour *Tour) Filename(ext string) string {
-	return fmt.Sprintf("%d_%d.%s", tour.ID, tour.ChangedAt.Unix(), ext)
+	return fmt.Sprintf(
+		"%s_%s_%d_%d.%s",
+		tour.Date.Format("2006-01-02"),
+		tour.FormattedSport(),
+		tour.ID,
+		tour.ChangedAt.Unix(),
+		ext,
+	)
 }
 
 func (tour *Tour) FormattedSport() string {
@@ -116,6 +123,8 @@ func (tour *Tour) FormattedSport() string {
 		return "touring"
 	case "mtb_easy":
 		return "gravel"
+	case "jogging":
+		return "running"
 	default:
 		return tour.Sport
 	}
