@@ -12,7 +12,10 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-func (client *Client) Upload(name string, gpxData string, sport string) error {
+const contentTypeJson = "application/json"
+const acceptJson = "application/hal+json,application/json"
+
+func (client *Client) Upload(name string, gpxData string, sport string, makeRoundtrip bool) error {
 	importedGpx, err := client.importGpx(gpxData)
 	if err != nil {
 		return err
@@ -23,7 +26,7 @@ func (client *Client) Upload(name string, gpxData string, sport string) error {
 		return err
 	}
 
-	tour = client.updateTourSettings(tour, name, sport)
+	tour = client.updateTourSettings(tour, name, sport, makeRoundtrip)
 
 	return client.createTour(tour)
 }
@@ -39,7 +42,7 @@ func (client *Client) importGpx(gpxData string) (*UploadedTour, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Accept", "application/hal+json,application/json")
+	req.Header.Set("Accept", acceptJson)
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -81,8 +84,8 @@ func (client *Client) importTour(tour *UploadedTour, sport string) (*MatchedTour
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/hal+json,application/json")
+	req.Header.Set("Content-Type", contentTypeJson)
+	req.Header.Set("Accept", acceptJson)
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -106,34 +109,36 @@ func (client *Client) importTour(tour *UploadedTour, sport string) (*MatchedTour
 	return &r.Embedded.Matched, nil
 }
 
-func (client *Client) updateTourSettings(tour *MatchedTour, name string, sport string) *MatchedTour {
+func (client *Client) updateTourSettings(tour *MatchedTour, name string, sport string, makeRoundtrip bool) *MatchedTour {
 	tour.Name = name
 	tour.Sport = sport
 	tour.Status = "public"
 	tour.Type = "tour_planned"
 	tour.Constitution = 4
 
-	firstPoint := tour.Path[0]
-	lastPoint := tour.Path[len(tour.Path)-1]
-	firstPoint.Reference = "special:back"
-	firstPoint.Index = lastPoint.Index + 1
+	if makeRoundtrip {
+		firstPoint := tour.Path[0]
+		lastPoint := tour.Path[len(tour.Path)-1]
+		firstPoint.Reference = "special:back"
+		firstPoint.Index = lastPoint.Index + 1
 
-	tour.Path = append(tour.Path, firstPoint)
+		tour.Path = append(tour.Path, firstPoint)
 
-	tour.Segments = append(tour.Segments, Segment{
-		From: lastPoint.Index,
-		To:   lastPoint.Index + 1,
-		Type: "Routed",
-	})
+		tour.Segments = append(tour.Segments, Segment{
+			From: lastPoint.Index,
+			To:   lastPoint.Index + 1,
+			Type: "Routed",
+		})
 
-	lastCoordinate := tour.Embedded.Coordinates.Items[len(tour.Embedded.Coordinates.Items)-1]
+		lastCoordinate := tour.Embedded.Coordinates.Items[len(tour.Embedded.Coordinates.Items)-1]
 
-	tour.Embedded.Coordinates.Items = append(tour.Embedded.Coordinates.Items, Coordinate{
-		Lat: firstPoint.Location.Lat,
-		Lng: firstPoint.Location.Lng,
-		Alt: firstPoint.Location.Alt,
-		T:   lastCoordinate.T + 1,
-	})
+		tour.Embedded.Coordinates.Items = append(tour.Embedded.Coordinates.Items, Coordinate{
+			Lat: firstPoint.Location.Lat,
+			Lng: firstPoint.Location.Lng,
+			Alt: firstPoint.Location.Alt,
+			T:   lastCoordinate.T + 1,
+		})
+	}
 
 	return tour
 }
@@ -152,8 +157,8 @@ func (client *Client) createTour(tour *MatchedTour) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/hal+json,application/json")
+	req.Header.Set("Content-Type", contentTypeJson)
+	req.Header.Set("Accept", acceptJson)
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
