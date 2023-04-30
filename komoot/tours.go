@@ -11,11 +11,11 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-func (client *Client) Tours(userID int, filter string) ([]Tour, []byte, error) {
+func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour, []byte, error) {
 
 	params := url.Values{}
 	params.Set("limit", "1000")
-	params.Set("type", "tour_planned")
+	params.Set("type", tourType)
 	params.Set("status", "private")
 
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www%s/api/v007/users/%d/tours/?%s", client.komootDomain, userID, params.Encode()), nil)

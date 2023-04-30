@@ -23,6 +23,7 @@ type args struct {
 	To           string `help:"The path to export to"`
 	FullDownload bool   `help:"If specified, all data is redownloaded" default:"false"`
 	Concurrency  int    `help:"The number of simultaneous downloads" default:"16"`
+	TourType     string `help:"The type of tours to download" default:"tour_planned"`
 }
 
 func main() {
@@ -56,7 +57,7 @@ func main() {
 
 	log.Info("Komoot User ID:", userID)
 
-	tours, resp, err := client.Tours(userID, args.Filter)
+	tours, resp, err := client.Tours(userID, args.Filter, args.TourType)
 	log.CheckError(err)
 
 	if len(tours) == 0 {

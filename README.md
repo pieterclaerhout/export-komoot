@@ -25,7 +25,7 @@ Run: `make run-incremental`
 
 ```
 $ ./export-komoot -h
-Usage: export-komoot [--email EMAIL] [--password PASSWORD] [--filter FILTER] [--format FORMAT] [--to TO] [--fulldownload] [--concurrency CONCURRENCY]
+Usage: export-komoot [--email EMAIL] [--password PASSWORD] [--filter FILTER] [--format FORMAT] [--to TO] [--fulldownload] [--concurrency CONCURRENCY] [--tourtype TOURTYPE]
 
 Options:
   --email EMAIL          Your Komoot email address
@@ -36,6 +36,7 @@ Options:
   --fulldownload         If specified, all data is redownloaded [default: false]
   --concurrency CONCURRENCY
                          The number of simultaneous downloads [default: 16]
+  --tourtype TOURTYPE    The type of tours to download [default: tour_planned]
   --help, -h             display this help and exit
 ```
 
