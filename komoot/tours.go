@@ -14,7 +14,7 @@ import (
 func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour, []byte, error) {
 
 	params := url.Values{}
-	params.Set("limit", "1000")
+	params.Set("limit", "1500")
 	params.Set("type", tourType)
 	params.Set("status", "private")
 
