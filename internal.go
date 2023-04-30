@@ -13,16 +13,6 @@ func fileExists(path string) bool {
 	return err == nil
 }
 
-func deleteWithPattern(path string, pattern string) {
-	items, err := filepath.Glob(filepath.Join(path, pattern))
-	if err != nil {
-		return
-	}
-	for _, item := range items {
-		os.Remove(item)
-	}
-}
-
 func formatJSON(data []byte) []byte {
 	var out bytes.Buffer
 	err := json.Indent(&out, data, "", "\t")

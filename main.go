@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/alexflint/go-arg"
@@ -128,8 +127,6 @@ func main() {
 						out = r.GPX()
 					}
 
-					deleteWithPattern(args.To, fmt.Sprintf("%d_*.*", tourToDownload.ID))
-
 					dstPath := filepath.Join(args.To, tourToDownload.Filename(format))
 					if err = saveTourFile(out, dstPath, tourToDownload); err != nil {
 						return err
@@ -153,20 +150,19 @@ func main() {
 		log.Info("Downloaded", downloadCount, "tours")
 	}
 
-	allTourIds := map[string]bool{}
+	allTourNames := map[string]bool{}
 	for _, tour := range allTours {
-		allTourIds[fmt.Sprint(tour.ID)] = true
+		allTourNames[tour.Filename(format)] = true
 	}
 
 	items, err := filepath.Glob(filepath.Join(args.To, "*."+format))
 	log.CheckError(err)
 	for _, item := range items {
-		id := strings.Split(filepath.Base(item), "_")
-		if _, exists := allTourIds[id[0]]; exists {
+		if _, exists := allTourNames[filepath.Base(item)]; exists {
 			continue
 		}
 		log.Info("Deleting:", filepath.Base(item))
-		deleteWithPattern(args.To, id[0]+"*."+format)
+		os.Remove(item)
 	}
 
 	log.Info("Saving tour list")
