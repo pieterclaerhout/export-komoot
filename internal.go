@@ -3,9 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/pieterclaerhout/export-komoot/komoot"
 )
@@ -36,18 +34,15 @@ func formatJSON(data []byte) []byte {
 
 func saveFormattedJSON(data []byte, path string) error {
 	data = formatJSON(data)
-	return ioutil.WriteFile(path, data, 0755)
+	return os.WriteFile(path, data, 0755)
 }
 
 func saveTourFile(data []byte, path string, tour komoot.Tour) error {
-
-	err := ioutil.WriteFile(path, data, 0755)
-	if err != nil {
+	if err := os.WriteFile(path, data, 0755); err != nil {
 		return err
 	}
 
 	os.Chtimes(path, tour.Date, tour.ChangedAt)
 
 	return nil
-
 }
