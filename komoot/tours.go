@@ -22,7 +22,7 @@ func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour,
 	if err != nil {
 		return nil, nil, err
 	}
-	req.Header.Set("Accept", "application/hal+json,application/json")
+	req.Header.Set("Accept", acceptJson)
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -56,5 +56,4 @@ func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour,
 	}
 
 	return r.Embedded.Tours, body, nil
-
 }

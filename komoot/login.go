@@ -23,7 +23,7 @@ func (client *Client) Login() (int, error) {
 	params.Set("email", client.Email)
 	params.Set("password", client.Password)
 
-	req, err := http.NewRequest(http.MethodPost, URL_LOGIN, strings.NewReader(params.Encode()))
+	req, err := http.NewRequest(http.MethodPost, loginUrl, strings.NewReader(params.Encode()))
 	if err != nil {
 		return 0, err
 	}
@@ -52,7 +52,7 @@ func (client *Client) Login() (int, error) {
 		return 0, errors.New("login failed: " + r.Error)
 	}
 
-	req, err = http.NewRequest(http.MethodGet, URL_TRANSFER, nil)
+	req, err = http.NewRequest(http.MethodGet, transferUrl, nil)
 	if err != nil {
 		return 0, err
 	}

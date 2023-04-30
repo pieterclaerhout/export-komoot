@@ -12,9 +12,6 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-const contentTypeJson = "application/json"
-const acceptJson = "application/hal+json,application/json"
-
 func (client *Client) Upload(name string, gpxData string, sport string, makeRoundtrip bool) error {
 	importedGpx, err := client.importGpx(gpxData)
 	if err != nil {

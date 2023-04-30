@@ -1,4 +1,6 @@
 package komoot
 
-const URL_LOGIN = "https://account.komoot.com/v1/signin"
-const URL_TRANSFER = "https://account.komoot.com/actions/transfer?type=signin"
+const loginUrl = "https://account.komoot.com/v1/signin"
+const transferUrl = "https://account.komoot.com/actions/transfer?type=signin"
+const contentTypeJson = "application/json"
+const acceptJson = "application/hal+json,application/json"
