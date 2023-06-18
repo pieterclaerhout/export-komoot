@@ -12,20 +12,20 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-func (client *Client) Upload(name string, gpxData string, sport string, makeRoundtrip bool) error {
+func (client *Client) Upload(name string, gpxData string, sport string, makeRoundtrip bool) (*MatchedTour, error) {
 	importedGpx, err := client.importGpx(gpxData)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tour, err := client.importTour(importedGpx, sport)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tour = client.updateTourSettings(tour, name, sport, makeRoundtrip)
 
-	return client.createTour(tour)
+	return tour, client.createTour(tour)
 }
 
 func (client *Client) importGpx(gpxData string) (*UploadedTour, error) {
@@ -169,7 +169,7 @@ func (client *Client) createTour(tour *MatchedTour) error {
 	}
 
 	log.DebugSeparator("create tour")
-	log.Debug(string(body))
+	log.DebugDump(body, "body:")
 
 	return nil
 }
