@@ -12,7 +12,19 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-func (client *Client) Upload(name string, gpxData string, sport string, makeRoundtrip bool) (*MatchedTour, error) {
+func (client *Client) Upload(userID int, name string, gpxData string, sport string, makeRoundtrip bool, overwrite bool) (*MatchedTour, error) {
+	if overwrite {
+		existingTours, _, err := client.Tours(userID, name, "")
+		if err != nil {
+			return nil, err
+		}
+
+		if len(existingTours) == 1 {
+			log.Warn("Overwriting existing tour:", name)
+			client.deleteTour(existingTours[0])
+		}
+	}
+
 	importedGpx, err := client.importGpx(gpxData)
 	if err != nil {
 		return nil, err
@@ -172,4 +184,34 @@ func (client *Client) createTour(tour *MatchedTour) error {
 	log.DebugDump(body, "body:")
 
 	return nil
+}
+
+func (client *Client) deleteTour(tour Tour) error {
+	req, err := http.NewRequest(
+		http.MethodDelete,
+		fmt.Sprintf("https://www%s/api/v007/tours/%d?hl=nl", client.komootDomain, tour.ID),
+		nil,
+	)
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", contentTypeJson)
+	req.Header.Set("Accept", acceptJson)
+
+	resp, err := client.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	log.DebugSeparator("delete tour")
+	log.DebugDump(body, "body:")
+
+	return nil
+
 }
