@@ -204,3 +204,7 @@ type MatchedTour struct {
 		} `json:"way_types"`
 	} `json:"_embedded"`
 }
+
+type RoutePlanResponse struct {
+	Duration float64 `json:"duration"`
+}
