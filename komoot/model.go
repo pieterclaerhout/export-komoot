@@ -66,6 +66,25 @@ type Surface struct {
 	Type   string  `json:"type"`
 }
 
+func (surface Surface) String() string {
+	switch surface.Type {
+	case "sb#unpaved":
+		return "Unpaved"
+	case "sb#cobbles":
+		return "Cobbles"
+	case "sb#paved":
+		return "Paved"
+	case "sb#asphalt":
+		return "Asphalt"
+	case "sf#unknown":
+		return "Unknown"
+	case "sb#compacted":
+		return "Gravel"
+	default:
+		return surface.Type
+	}
+}
+
 type EmbeddedSurface struct {
 	From    int64  `json:"from"`
 	To      int64  `json:"to"`
