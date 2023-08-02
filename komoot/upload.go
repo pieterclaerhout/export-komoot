@@ -251,8 +251,6 @@ func (client *Client) planRoute(tour *MatchedTour) (float64, error) {
 		return 0, err
 	}
 
-	log.InfoDump(r, "tour:")
-
 	return r.Duration, nil
 }
 
