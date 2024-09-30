@@ -1,5 +1,8 @@
 # export-komoot
 
+> [!WARNING]
+> NOTICE: Komoot has decided to add an invisible captcha to their login process.
+
 This is a proof-of-concept which allows you to export your planned tours from [Komoot](https://www.komoot.com).
 
 Note that this is a unofficial tool which uses private API's from Komoot and can break at any time…
