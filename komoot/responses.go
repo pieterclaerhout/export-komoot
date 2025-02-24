@@ -10,12 +10,6 @@ import (
 	"github.com/tormoder/fit"
 )
 
-type loginResponse struct {
-	Type  string `json:"type"`
-	Error string `json:"error"`
-	Email string `json:"email"`
-}
-
 type CoordinatesResponse struct {
 	Tour  *Tour        `json:"-"`
 	Items []Coordinate `json:"items"`

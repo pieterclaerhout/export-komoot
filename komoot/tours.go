@@ -1,6 +1,7 @@
 package komoot
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,7 +9,7 @@ import (
 	"net/url"
 )
 
-func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour, []byte, error) {
+func (client *Client) Tours(userID int64, filter string, tourType string) ([]Tour, []byte, error) {
 
 	params := url.Values{}
 	params.Set("limit", "1500")
@@ -16,11 +17,16 @@ func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour,
 	params.Set("status", "private")
 	params.Set("name", filter)
 
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www%s/api/v007/users/%d/tours/?%s", client.komootDomain, userID, params.Encode()), nil)
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("https://www%s/api/v007/users/%d/tours/?%s", client.komootDomain, userID, params.Encode()),
+		nil,
+	)
 	if err != nil {
 		return nil, nil, err
 	}
 	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -39,4 +45,9 @@ func (client *Client) Tours(userID int, filter string, tourType string) ([]Tour,
 	}
 
 	return r.Embedded.Tours, body, nil
+}
+
+func (client *Client) basicAuth() string {
+	auth := client.Email + ":" + client.Password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }

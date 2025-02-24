@@ -17,6 +17,8 @@ func (client *Client) Coordinates(tour Tour) (*CoordinatesResponse, error) {
 		return nil, err
 	}
 
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
+
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
 		return nil, err

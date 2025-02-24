@@ -46,3 +46,7 @@ Options:
 # Caution
 
 Use at your own risk!
+
+# References
+
+https://github.com/Woeler/komoot-php/commit/21065fcf517cc0fac646a6a216b5cf2d851f7975#diff-17339dceedd73393b090f1db8e636e6a8a5a161944c87d85dcd8ec3789dd6112

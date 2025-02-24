@@ -12,7 +12,7 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-func (client *Client) Upload(userID int, name string, gpxData string, sport string, makeRoundtrip bool, overwrite bool) (*MatchedTour, error) {
+func (client *Client) Upload(userID int64, name string, gpxData string, sport string, makeRoundtrip bool, overwrite bool) (*MatchedTour, error) {
 	if overwrite {
 		existingTours, _, err := client.Tours(userID, name, "")
 		if err != nil {
@@ -60,6 +60,7 @@ func (client *Client) importGpx(gpxData string) (*UploadedTour, error) {
 		return nil, err
 	}
 	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -103,6 +104,7 @@ func (client *Client) importTour(tour *UploadedTour, sport string) (*MatchedTour
 	}
 	req.Header.Set("Content-Type", contentTypeJson)
 	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -177,6 +179,7 @@ func (client *Client) createTour(tour *MatchedTour) error {
 	}
 	req.Header.Set("Content-Type", contentTypeJson)
 	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -231,6 +234,7 @@ func (client *Client) planRoute(tour *MatchedTour) (float64, error) {
 	}
 	req.Header.Set("Content-Type", contentTypeJson)
 	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {
@@ -265,6 +269,7 @@ func (client *Client) deleteTour(tour Tour) error {
 	}
 	req.Header.Set("Content-Type", contentTypeJson)
 	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
 
 	resp, err := client.httpClient.Do(req)
 	if err != nil {

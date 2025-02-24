@@ -17,6 +17,7 @@ import (
 type args struct {
 	Email        string `help:"Your Komoot email address"`
 	Password     string `help:"Your Komoot password"`
+	UserID       int64  `help:"Your Komoot user ID"`
 	Filter       string `help:"Filter tours with name matching this pattern"`
 	Format       string `help:"The format to export as: gpx or fit" default:"gpx"`
 	To           string `help:"The path to export to"`
@@ -41,22 +42,22 @@ func main() {
 		format = "fit"
 	}
 
-	client := komoot.NewClient(args.Email, args.Password)
+	client := komoot.NewClient(args.Email, args.Password, args.UserID)
 
-	userID, err := client.Login()
-	log.CheckError(err)
+	// userID, err := client.Login()
+	// log.CheckError(err)
 
 	fullDstPath, _ := filepath.Abs(args.To)
 	log.Info("Exporting:", args.Email)
 	log.Info("       to:", fullDstPath)
 	log.Info("   format:", format)
 
-	err = os.MkdirAll(args.To, 0777)
+	err := os.MkdirAll(args.To, 0777)
 	log.CheckError(err)
 
-	log.Info("Komoot User ID:", userID)
+	log.Info("Komoot User ID:", args.UserID)
 
-	tours, resp, err := client.Tours(userID, args.Filter, args.TourType)
+	tours, resp, err := client.Tours(args.UserID, args.Filter, args.TourType)
 	log.CheckError(err)
 
 	if len(tours) == 0 {
