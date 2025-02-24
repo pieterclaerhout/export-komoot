@@ -7,7 +7,7 @@ require (
 	github.com/pieterclaerhout/go-log v1.15.0
 	github.com/pieterclaerhout/go-waitgroup v1.0.7
 	github.com/shabbyrobe/xmlwriter v0.0.0-20220218224045-defe0ad214f6
-	github.com/tormoder/fit v0.14.0
+	github.com/tormoder/fit v0.15.0
 )
 
 require (
