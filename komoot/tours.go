@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-func (client *Client) Tours(userID int64, filter string, tourType string) ([]Tour, []byte, error) {
+func (client *Client) Tours(filter string, tourType string) ([]Tour, []byte, error) {
 
 	params := url.Values{}
 	params.Set("limit", "1500")
@@ -19,7 +19,7 @@ func (client *Client) Tours(userID int64, filter string, tourType string) ([]Tou
 
 	req, err := http.NewRequest(
 		http.MethodGet,
-		fmt.Sprintf("https://www%s/api/v007/users/%d/tours/?%s", client.komootDomain, userID, params.Encode()),
+		fmt.Sprintf("https://www%s/api/v007/users/%d/tours/?%s", client.komootDomain, client.UserID, params.Encode()),
 		nil,
 	)
 	if err != nil {

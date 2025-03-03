@@ -57,7 +57,7 @@ func main() {
 
 	log.Info("Komoot User ID:", args.UserID)
 
-	tours, resp, err := client.Tours(args.UserID, args.Filter, args.TourType)
+	tours, resp, err := client.Tours(args.Filter, args.TourType)
 	log.CheckError(err)
 
 	if len(tours) == 0 {

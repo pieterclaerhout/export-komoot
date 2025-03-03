@@ -12,9 +12,9 @@ import (
 	"github.com/pieterclaerhout/go-log"
 )
 
-func (client *Client) Upload(userID int64, name string, gpxData string, sport string, makeRoundtrip bool, overwrite bool) (*MatchedTour, error) {
+func (client *Client) Upload(name string, gpxData string, sport string, makeRoundtrip bool, overwrite bool) (*MatchedTour, error) {
 	if overwrite {
-		existingTours, _, err := client.Tours(userID, name, "")
+		existingTours, _, err := client.Tours(name, "")
 		if err != nil {
 			return nil, err
 		}
