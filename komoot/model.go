@@ -132,6 +132,10 @@ func (tour *Tour) Filename(ext string) string {
 	)
 }
 
+func (tour *Tour) FormattedDistance() string {
+	return fmt.Sprintf("%.2f km", tour.Distance/1000)
+}
+
 func (tour *Tour) FormattedSport() string {
 	switch tour.Sport {
 	case "mtb":
