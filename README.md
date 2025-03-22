@@ -11,7 +11,19 @@ Create a `.env` file which should include your username and password:
 ```env
 KOMOOT_EMAIL=user@host.com
 KOMOOT_PASSWD=password
+KOMOOT_USER_ID=123456
 ```
+
+# Finding your Komoot User ID
+
+To find your Komoot user ID, login to Komoot, click on your user name in the upper right corner of the screen and
+select the option "Profile". The URL you will navigate to will look like this:
+
+```
+https://www.komoot.com/<lang>>-<localle>/user/<userid>
+```
+
+Your user ID is the number in the last part of the URL.
 
 # Running a full export
 
@@ -25,11 +37,12 @@ Run: `make run-incremental`
 
 ```
 $ ./export-komoot -h
-Usage: export-komoot [--email EMAIL] [--password PASSWORD] [--filter FILTER] [--format FORMAT] [--to TO] [--fulldownload] [--concurrency CONCURRENCY] [--tourtype TOURTYPE]
+Usage: export-komoot --email EMAIL --password PASSWORD --userid USERID [--filter FILTER] [--format FORMAT] [--to TO] [--fulldownload] [--concurrency CONCURRENCY] [--tourtype TOURTYPE]
 
 Options:
   --email EMAIL          Your Komoot email address
   --password PASSWORD    Your Komoot password
+  --userid USERID        Your Komoot user ID
   --filter FILTER        Filter tours with name matching this pattern
   --format FORMAT        The format to export as: gpx or fit [default: gpx]
   --to TO                The path to export to

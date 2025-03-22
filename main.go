@@ -15,9 +15,9 @@ import (
 )
 
 type args struct {
-	Email        string `arg:"required" help:"Your Komoot email address"`
-	Password     string `arg:"required" help:"Your Komoot password"`
-	UserID       int64  `arg:"required" help:"Your Komoot user ID"`
+	Email        string `arg:"env:KOMOOT_EMAIL,required" help:"Your Komoot email address"`
+	Password     string `arg:"env:KOMOOT_PASSWORD,required" help:"Your Komoot password"`
+	UserID       int64  `arg:"env:KOMOOT_USER_ID,required" help:"Your Komoot user ID"`
 	Filter       string `help:"Filter tours with name matching this pattern"`
 	Format       string `help:"The format to export as: gpx or fit" default:"gpx"`
 	To           string `help:"The path to export to"`
