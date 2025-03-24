@@ -23,7 +23,7 @@ type args struct {
 	To           string `help:"The path to export to"`
 	FullDownload bool   `help:"If specified, all data is redownloaded" default:"false"`
 	Concurrency  int    `help:"The number of simultaneous downloads" default:"16"`
-	TourType     string `help:"The type of tours to download" default:"tour_planned"`
+	TourType     string `help:"The type of tours to download" default:""`
 }
 
 func main() {

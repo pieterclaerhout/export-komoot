@@ -49,7 +49,7 @@ Options:
   --fulldownload         If specified, all data is redownloaded [default: false]
   --concurrency CONCURRENCY
                          The number of simultaneous downloads [default: 16]
-  --tourtype TOURTYPE    The type of tours to download [default: tour_planned]
+  --tourtype TOURTYPE    The type of tours to download [eg: tour_planned]
   --help, -h             display this help and exit
 ```
 
