@@ -4,6 +4,10 @@ This is a proof-of-concept which allows you to export your planned tours from [K
 
 Note that this is a unofficial tool which uses private API's from Komoot and can break at any time…
 
+# Installing
+
+To install, you can download the latest release from [the releases](https://github.com/pieterclaerhout/export-komoot/releases).
+
 # Setup
 
 Create a `.env` file which should include your username and password:
