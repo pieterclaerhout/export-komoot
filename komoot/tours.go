@@ -10,9 +10,8 @@ import (
 )
 
 func (client *Client) Tours(filter string, tourType string) ([]Tour, []byte, error) {
-
 	params := url.Values{}
-	params.Set("limit", "1500")
+	params.Set("limit", "5000")
 	params.Set("sport_types", tourType)
 	params.Set("status", "private")
 	params.Set("name", filter)
