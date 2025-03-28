@@ -97,7 +97,7 @@ func main() {
 		for _, tour := range tours {
 
 			tourToDownload := tour
-			label := fmt.Sprintf("%10d | %-7s | %-15s | %s", tour.ID, tour.Status, tour.FormattedSport(), tour.Name)
+			label := fmt.Sprintf("%10d | %-15s | %-15s | %s", tour.ID, tour.FormattedSport(), tour.Type, tour.Name)
 
 			wg.Add(func() {
 

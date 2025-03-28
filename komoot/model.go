@@ -3,6 +3,8 @@ package komoot
 import (
 	"fmt"
 	"time"
+
+	"github.com/gosimple/slug"
 )
 
 type UploadedTour struct {
@@ -118,10 +120,12 @@ type Tour struct {
 
 func (tour *Tour) Filename() string {
 	return fmt.Sprintf(
-		"%s_%s_%d_%d.gpx",
+		"%s_%d_%s_%s_%d.gpx",
 		tour.Date.Format("2006-01-02"),
-		tour.FormattedSport(),
 		tour.ID,
+		slug.Make(tour.Name),
+		// tour.FormattedSport(),
+		tour.Type,
 		tour.ChangedAt.Unix(),
 	)
 }
