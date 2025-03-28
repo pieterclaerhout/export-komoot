@@ -46,6 +46,32 @@ func (client *Client) Tours(filter string, tourType string) ([]Tour, []byte, err
 	return r.Embedded.Tours, body, nil
 }
 
+func (client *Client) Download(tour Tour) ([]byte, error) {
+	req, err := http.NewRequest(
+		http.MethodGet,
+		fmt.Sprintf("https://www%s/api/v007/tours/%d.gpx", client.komootDomain, tour.ID),
+		nil,
+	)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Accept", acceptJson)
+	req.Header.Add("Authorization", "Basic "+client.basicAuth())
+
+	resp, err := client.httpClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return body, nil
+}
+
 func (client *Client) basicAuth() string {
 	auth := client.Email + ":" + client.Password
 	return base64.StdEncoding.EncodeToString([]byte(auth))

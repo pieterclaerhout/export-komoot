@@ -26,11 +26,6 @@ type Coordinate struct {
 	T   int64   `json:"t"`
 }
 
-func (c Coordinate) Time(startTime time.Time) string {
-	t := time.Unix(c.T+startTime.Unix(), 0)
-	return t.UTC().Format("2006-01-02T15:04:05Z")
-}
-
 type Difficulty struct {
 	ExplanationFitness   string `json:"explanation_fitness"`
 	ExplanationTechnical string `json:"explanation_technical"`
@@ -121,14 +116,13 @@ type Tour struct {
 	ChangedAt     time.Time `json:"changed_at"`
 }
 
-func (tour *Tour) Filename(ext string) string {
+func (tour *Tour) Filename() string {
 	return fmt.Sprintf(
-		"%s_%s_%d_%d.%s",
+		"%s_%s_%d_%d.gpx",
 		tour.Date.Format("2006-01-02"),
 		tour.FormattedSport(),
 		tour.ID,
 		tour.ChangedAt.Unix(),
-		ext,
 	)
 }
 

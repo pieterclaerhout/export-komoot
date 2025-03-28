@@ -19,7 +19,6 @@ type args struct {
 	Password     string `arg:"env:KOMOOT_PASSWORD,required" help:"Your Komoot password"`
 	UserID       int64  `arg:"env:KOMOOT_USER_ID,required" help:"Your Komoot user ID"`
 	Filter       string `help:"Filter tours with name matching this pattern"`
-	Format       string `help:"The format to export as: gpx or fit" default:"gpx"`
 	To           string `help:"The path to export to"`
 	FullDownload bool   `help:"If specified, all data is redownloaded" default:"false"`
 	Concurrency  int    `help:"The number of simultaneous downloads" default:"16"`
@@ -37,17 +36,11 @@ func main() {
 	start := time.Now()
 	defer func() { log.Info("Elapsed:", time.Since(start)) }()
 
-	format := "gpx"
-	if args.Format == "fit" {
-		format = "fit"
-	}
-
 	client := komoot.NewClient(args.Email, args.Password, args.UserID)
 
 	fullDstPath, _ := filepath.Abs(args.To)
 	log.Info("Exporting:", args.Email)
 	log.Info("       to:", fullDstPath)
-	log.Info("   format:", format)
 
 	err := os.MkdirAll(args.To, 0777)
 	log.CheckError(err)
@@ -76,7 +69,7 @@ func main() {
 
 			allTours = append(allTours, tour)
 
-			dstPath := filepath.Join(args.To, tour.Filename(format))
+			dstPath := filepath.Join(args.To, tour.Filename())
 			if !fileExists(dstPath) {
 				changedTours = append(changedTours, tour)
 			}
@@ -110,22 +103,12 @@ func main() {
 
 				if err := func() error {
 
-					r, err := client.Coordinates(tourToDownload)
+					out, err := client.Download(tour)
 					if err != nil {
 						return err
 					}
 
-					var out []byte
-					if format == "fit" {
-						out, err = r.Fit()
-						if err != nil {
-							return err
-						}
-					} else {
-						out = r.GPX()
-					}
-
-					dstPath := filepath.Join(args.To, tourToDownload.Filename(format))
+					dstPath := filepath.Join(args.To, tourToDownload.Filename())
 					if err = saveTourFile(out, dstPath, tourToDownload); err != nil {
 						return err
 					}
@@ -150,10 +133,10 @@ func main() {
 
 	allTourNames := map[string]bool{}
 	for _, tour := range allTours {
-		allTourNames[tour.Filename(format)] = true
+		allTourNames[tour.Filename()] = true
 	}
 
-	items, err := filepath.Glob(filepath.Join(args.To, "*."+format))
+	items, err := filepath.Glob(filepath.Join(args.To, "*.gpx"))
 	log.CheckError(err)
 	for _, item := range items {
 		if _, exists := allTourNames[filepath.Base(item)]; exists {
