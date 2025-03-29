@@ -19,7 +19,7 @@ type args struct {
 	Password     string `arg:"env:KOMOOT_PASSWORD,required" help:"Your Komoot password"`
 	UserID       int64  `arg:"env:KOMOOT_USER_ID,required" help:"Your Komoot user ID"`
 	Filter       string `help:"Filter tours with name matching this pattern"`
-	To           string `help:"The path to export to"`
+	To           string `arg:"required" help:"The path to export to"`
 	FullDownload bool   `help:"If specified, all data is redownloaded" default:"false"`
 	Concurrency  int    `help:"The number of simultaneous downloads" default:"16"`
 	TourType     string `help:"The type of tours to download" default:""`
