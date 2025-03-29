@@ -13,7 +13,7 @@ build: init
 	$(call build-binary)
 
 test:
-	@$(GO) test -cover `go list ./... | grep -v cmd`
+	@go test -cover `go list ./... | grep -v cmd`
 
 run-incremental: build
 	@DEBUG=0 ./$(APP_NAME) --email "$(KOMOOT_EMAIL)" --password "$(KOMOOT_PASSWD)" --userid "$(KOMOOT_USER_ID)" --to "export"
