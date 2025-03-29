@@ -28,7 +28,11 @@ type args struct {
 func main() {
 
 	var args args
-	arg.MustParse(&args)
+	p := arg.MustParse(&args)
+
+	if args.To == "" {
+		p.Fail("you must provide a value for --to")
+	}
 
 	log.PrintTimestamp = true
 	log.PrintColors = true
