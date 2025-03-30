@@ -1,5 +1,11 @@
 package komoot
 
+type ErrorResponse struct {
+	Error   string `json:"error"`
+	Code    int    `json:"code"`
+	Message string `json:"message"`
+}
+
 type CoordinatesResponse struct {
 	Tour  *Tour        `json:"-"`
 	Items []Coordinate `json:"items"`

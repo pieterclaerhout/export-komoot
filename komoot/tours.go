@@ -38,6 +38,10 @@ func (client *Client) Tours(filter string, tourType string) ([]Tour, []byte, err
 		return nil, nil, err
 	}
 
+	if err := client.checkError(resp, body); err != nil {
+		return nil, nil, err
+	}
+
 	var r ToursResponse
 	if err := json.Unmarshal(body, &r); err != nil {
 		return nil, nil, err
@@ -69,10 +73,27 @@ func (client *Client) Download(tour Tour) ([]byte, error) {
 		return nil, err
 	}
 
+	if err := client.checkError(resp, body); err != nil {
+		return nil, err
+	}
+
 	return body, nil
 }
 
 func (client *Client) basicAuth() string {
 	auth := client.Email + ":" + client.Password
 	return base64.StdEncoding.EncodeToString([]byte(auth))
+}
+
+func (client *Client) checkError(resp *http.Response, body []byte) error {
+	if resp.StatusCode == http.StatusOK {
+		return nil
+	}
+
+	var r ErrorResponse
+	if err := json.Unmarshal(body, &r); err != nil {
+		return err
+	}
+
+	return fmt.Errorf("%s (%d %s)", r.Message, r.Code, r.Error)
 }
