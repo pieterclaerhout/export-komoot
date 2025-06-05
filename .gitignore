@@ -4,3 +4,4 @@ export
 .DS_Store
 export-komoot*.tar.gz
 export-komoot*.zip
+.idea/
