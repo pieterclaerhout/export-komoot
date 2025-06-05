@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"os"
 	"path/filepath"
 	"time"
@@ -16,7 +17,7 @@ import (
 
 type args struct {
 	Email        string `arg:"env:KOMOOT_EMAIL,required" help:"Your Komoot email address"`
-	Password     string `arg:"env:KOMOOT_PASSWORD,required" help:"Your Komoot password"`
+	Password     string `arg:"env:KOMOOT_PASSWD,required" help:"Your Komoot password"`
 	UserID       int64  `arg:"env:KOMOOT_USER_ID,required" help:"Your Komoot user ID"`
 	Filter       string `help:"Filter tours with name matching this pattern"`
 	To           string `arg:"required" help:"The path to export to"`
@@ -26,6 +27,11 @@ type args struct {
 }
 
 func main() {
+	if _, err := os.Stat(".env"); err == nil {
+		if err := godotenv.Load(); err != nil {
+			log.Fatal("Error loading .env file:", err.Error())
+		}
+	}
 
 	var args args
 	p := arg.MustParse(&args)
@@ -61,13 +67,13 @@ func main() {
 
 	log.Info("Found", len(tours), "planned tours")
 
-	allTours := []komoot.Tour{}
+	var allTours []komoot.Tour
 
 	if !args.FullDownload {
 
 		log.Info("Incremental download, checking what has changed")
 
-		changedTours := []komoot.Tour{}
+		var changedTours []komoot.Tour
 
 		for _, tour := range tours {
 
@@ -147,7 +153,9 @@ func main() {
 			continue
 		}
 		log.Info("Deleting:", filepath.Base(item))
-		os.Remove(item)
+		if err := os.Remove(item); err != nil {
+			log.Warn("Failed to delete:", item, "|", err)
+		}
 	}
 
 	log.Info("Saving tour list")

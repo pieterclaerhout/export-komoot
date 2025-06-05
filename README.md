@@ -3,7 +3,7 @@
 This is a tool which allows you to export your planned and recorded tours from [Komoot](https://www.komoot.com).
 
 > [!NOTE]
-> This is a unofficial tool which uses private API's from Komoot and can break at any time…
+> This is an unofficial tool which uses private API's from Komoot and can break at any time…
 
 # Installing
 
@@ -33,7 +33,7 @@ Usage: export-komoot --email EMAIL --password PASSWORD --userid USERID [--filter
 
 Options:
   --email EMAIL          Your Komoot email address [env: KOMOOT_EMAIL]
-  --password PASSWORD    Your Komoot password [env: KOMOOT_PASSWORD]
+  --password PASSWORD    Your Komoot password [env: KOMOOT_PASSWD]
   --userid USERID        Your Komoot user ID [env: KOMOOT_USER_ID]
   --filter FILTER        Filter tours with name matching this pattern
   --to TO                The path to export to
@@ -52,9 +52,9 @@ To download all planned and recorded tours, you can run:
 ./export-komoot --email "<email>" --password "<password>" --userid "<user_id>" --to "<destination_path>" --fulldownload
 ```
 
-This will download all tours, even if they already existing in the target location.
+This will download all tours, even if they already exist in the target location.
 
-## Running an incremental export (the defaut)
+## Running an incremental export (the default)
 
 To only download the tours which aren't downloaded yet or those that were updated, you can run it like this:
 
