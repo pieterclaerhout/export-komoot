@@ -3,7 +3,7 @@ module github.com/pieterclaerhout/export-komoot
 go 1.24
 
 require (
-	github.com/alexflint/go-arg v1.6.0
+	github.com/alexflint/go-arg v1.6.1
 	github.com/gosimple/slug v1.15.0
 	github.com/joho/godotenv v1.5.1
 	github.com/pieterclaerhout/go-log v1.15.0
